@@ -1,10 +1,11 @@
 from random import randint
 from collections import deque
 
+# Check if the move is within board boundaries and the cell is valid (not '#')
 def is_valid_move(board, visited, row, col):
-    # Check if the move is within board boundaries and the cell is valid (not '#')
     return 0 <= row < len(board) and 0 <= col < len(board[0]) and board[row][col] == '.' and not visited[row][col]
 
+# Looks for a valid path from (i1,j1) to (i2,j2)
 def bfs(board, i1, j1, i2, j2):
     # Directions for moving: up, down, left, right
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -34,6 +35,7 @@ def bfs(board, i1, j1, i2, j2):
     # If no path found
     return False
 
+# Transforms the board dict into a writeable string
 def stringify(tablero):
     string = ""
     string+= f'{tablero["N"]} {tablero["M"]} {tablero["D"]}\n'
@@ -45,12 +47,14 @@ def stringify(tablero):
         string+="\n"
     return string
 
+# Checks if the board is valid
 def checkTablero(tablero):
     if(tablero["T"][tablero["i1"]][tablero["j1"]] == "#" or
        tablero["T"][tablero["i2"]][tablero["j2"]] == "#"):
         return False
     return bfs(tablero["T"], tablero["i1"], tablero["j1"], tablero["i2"], tablero["j2"])
 
+# Genereates a Random Board of given dimensions
 def generarTablero(N:int,M:int,D:int):
     tablero={}
     tablero["N"] = N
@@ -72,6 +76,9 @@ def generarTablero(N:int,M:int,D:int):
     print(tablero)
     return tablero
 
+# Generates various boards up to dimension N*M 
+# and writes each one in one file if the board is valid
+#N>8, M>8
 def generarNM_Tableros(N:int, M: int):
     for i in range(8,N):
         for j in range(8,M,3):
