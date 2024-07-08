@@ -9,9 +9,10 @@ CFLAGS = -Wall -Wextra -I./lectura -I./structs
 SRCDIR = .
 LECTURADIR = lectura
 STRUCTSDIR = structs
+ROBOTDIR = robot
 
 # Archivos fuente
-SRC = $(SRCDIR)/main.c $(wildcard $(LECTURADIR)/*.c) $(wildcard $(STRUCTSDIR)/*.c)
+SRC = $(SRCDIR)/main.c $(wildcard $(LECTURADIR)/*.c) $(wildcard $(STRUCTSDIR)/*.c) $(wildcard $(ROBOTDIR)/*.c)
 
 # Archivos objeto
 OBJ = $(SRC:.c=.o)
@@ -33,7 +34,7 @@ clean:
 
 # Limpiar todo, incluyendo archivos generados por el preprocesador
 distclean: clean
-	rm -f $(SRCDIR)/*.gch $(LECTURADIR)/*.gch $(STRUCTSDIR)/*.gch
+	rm -f $(SRCDIR)/*.gch $(LECTURADIR)/*.gch $(STRUCTSDIR)/*.gch $(ROBOTDIR)/*.gch
 
 # Phony targets
 .PHONY: all clean distclean
