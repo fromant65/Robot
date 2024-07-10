@@ -1,6 +1,14 @@
 #include <stdlib.h>
 #include "robot.h"
 #include "a_star.h"
+
+/**
+ * @brief Funcion interna que calcula el valor absoluto de un numero
+ */
+int abs(int a){
+    return a>=0?a:-a;
+}
+
 /**
  * @brief Toma dos enteros x,y y una matriz bidimensional con sus dimensiones
  * @return 1 si la casilla en la posición (x,y) está vacía, 
@@ -19,8 +27,8 @@ int posicion_valida(int x, int y, Entorno e){
  */
 Robot* crear_robot(int N, int M, int i1, int i2, int j1, int j2){
     Robot* robot = malloc(sizeof(Robot));
-    Coord inicio = {i1,i2};
-    Coord meta = {j1,j2};
+    Coord inicio = {.x=i1,.y=i2};
+    Coord meta = {.x=j1,.y=j2};
     Entorno entorno;
     entorno.M=M;
     entorno.N=N;
@@ -31,7 +39,7 @@ Robot* crear_robot(int N, int M, int i1, int i2, int j1, int j2){
             entorno.grilla[i][j]=1;
         }
     }
-    Stack s= calcularCamino(inicio,meta,entorno);
+    Stack s= calcular_camino(inicio,meta,entorno);
     RobotRecorrido rec;
     rec.camino=malloc(sizeof(char)*N*M);
     rec.capacidad=N*M;
@@ -48,7 +56,7 @@ Robot* crear_robot(int N, int M, int i1, int i2, int j1, int j2){
  * @brief libera la memoria usada por el robot dado
  */
 void liberar_robot(Robot* r){
-    free(r->recorridoHecho->camino);
+    free(r->recorridoHecho.camino);
     stack_free(r->recorridoPlaneado);
     free_entorno(r->entorno);
     free(r);
@@ -63,18 +71,17 @@ void liberar_robot(Robot* r){
  * del robot a la posición a la que se movió. 
  */
 void hacer_movimiento(Robot* r, Entorno e){
-    char* top_move = stack_pop(r->recorridoPlaneado);
-    int i1=r->posicion.x, i2=r->posicion.y;
-    Coord next_pos = calcular_movimiento(top_move[0],r->posicion);
+    char top_move = stack_pop(r->recorridoPlaneado);
+    Coord next_pos = calcular_movimiento(top_move,r->posicion);
     int next_x=next_pos.x;
     int next_y=next_pos.y;
     if(posicion_valida(next_x, next_y,e)){
         r->posicion=next_pos;
-        r->recorridoHecho.camino[r->recorridoHecho.largo++]=top_move[0];
+        r->recorridoHecho.camino[r->recorridoHecho.largo++]=top_move;
     }else{
         r->entorno.grilla[next_x][next_y]=0;
-        char* siguientePaso = stack_pop(r->recorridoPlaneado);
-        Coord next_empty = calcular_movimiento(siguientePaso[0], next_pos);
+        char siguientePaso = stack_pop(r->recorridoPlaneado);
+        Coord next_empty = calcular_movimiento(siguientePaso, next_pos);
         //Calculamos un nuevo camino desde la posición del robot 
         //hasta el punto al que hubieramos llegado sin obstáculo,
         //Excepto que la posición actual esté más cerca de la meta
@@ -102,14 +109,22 @@ Coord calcular_movimiento(char direccion, Coord posicion){
     int next_x=direccion=='U'?posicion.x-1:direccion=='D'?posicion.x+1:posicion.x; 
     int next_y=direccion=='L'?posicion.y-1:direccion=='R'?posicion.y+1:posicion.y;
     Coord ret = {next_x, next_y};    
+    return ret;
 }
 
 /**
- * @brief Funcion interna que calcula el valor absoluto de un numero
+ * @brief Recibe dos casillas vecinas p1 y p2 y calcula en qué dirección
+ * está p2 respecto a p1. Si las casillas no son vecinas, devuelve '\0'
  */
-int abs(int a){
-    return a>=0?a:-a;
+char calcular_direccion(Coord p1, Coord p2){
+    if(abs(p1.x-p2.x)>1 || abs(p1.y-p2.y)>1) return '\0';
+    if(abs(p1.x-p2.x)==1 && abs(p1.y-p2.y==1)) return '\0';
+    if(p1.x>p2.x) return 'U';
+    if(p1.x<p2.x) return 'D';
+    if(p1.y>p2.y) return 'L';
+    return 'R';
 }
+
 
 /**
  * @brief Dadas dos coordenadas, calcula su distancia de Manhattan

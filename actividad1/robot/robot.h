@@ -39,6 +39,12 @@ void hacer_movimiento(Robot* r, Entorno e);
 Coord calcular_movimiento(char direccion, Coord posicion);
 
 /**
+ * @brief Recibe dos casillas vecinas p1 y p2 y calcula en qué dirección
+ * está p2 respecto a p1. Si las casillas no son vecinas, devuelve '\0'
+ */
+char calcular_direccion(Coord p1, Coord p2);
+
+/**
  * @brief Dadas dos coordenadas, calcula su distancia de Manhattan
  */
 int heuristica(Coord init, Coord fin);

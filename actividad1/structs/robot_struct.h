@@ -3,6 +3,11 @@
 
 #include "stack.h"
 #include "entorno.h"
+#include "coord.h"
+typedef struct{
+    char* camino;
+    int largo, capacidad;
+}RobotRecorrido;
 
 /**
  * @brief 
@@ -24,10 +29,5 @@ typedef struct{
     Stack recorridoPlaneado;
     Entorno entorno;
 }Robot;
-
-typedef struct{
-    char* camino;
-    int largo, capacidad;
-}RobotRecorrido;
 
 #endif

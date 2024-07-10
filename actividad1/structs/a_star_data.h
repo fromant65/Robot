@@ -13,6 +13,7 @@ typedef struct{
     Heap* openList;
     HeapElem** *hash; //array bidimensional de punteros a HeapElem con los datos del Heap
     int** closedList; //closedList[i][j]==1 si la celda está en la lista, sino 0
+    HeapElem* *nodos; //Garbage collector para liberar la memoria de los nodos 
 }AStartData;
 
 /**
@@ -21,5 +22,10 @@ typedef struct{
  * y la devolvemos como estructura
  */
 AStartData crear_a_star_data(int N, int M);
+
+/**
+ * @brief Libera toda la memoria usada por la estructura recibida de tipo AStarData
+ */
+void liberar_a_star_data(AStartData data, int N, int M);
 
 #endif

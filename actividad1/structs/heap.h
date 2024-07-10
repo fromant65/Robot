@@ -1,6 +1,5 @@
 #ifndef HEAP_H
 #define HEAP_H
-#include "function_prototypes.h"
 #include "coord.h"
 /**
  * Será un heap utilizado para A*, por lo cual la prioridad será la suma de g y h
@@ -29,14 +28,13 @@ HeapElem* crear_heap_elem(Coord pos, int f, int g, int h, HeapElem* parent, int 
  * @brief Crea una cola de prioridad vacía del tamaño dado
  * con el tamaño indicado de tipo de dato
  */
-Heap* crear_heap(int capacidad, int typeSize);
+Heap* crear_heap(int capacidad);
 
 /**
  * @brief libera la memoria usada por el Heap pasado
- * Usa la FuncionDestructora para liberar la memoria de
- * los datos de cada HeapElem del buffer
+ * No libera la memoria ocupada por cada uno de los elementos del buffer
  */
-void liberar_heap(Heap* h, FuncionDestructora f);
+void liberar_heap(Heap* h);
 
 /**
  * @return el elemento de menor prioridad del Heap dado

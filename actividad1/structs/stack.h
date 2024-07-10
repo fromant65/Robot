@@ -2,7 +2,7 @@
 #define STACK_H
 
 typedef struct _Stack{
-    void* data;
+    char data;
     struct _Stack* next;
 }StackNode;
 
@@ -16,12 +16,12 @@ Stack crear_stack();
 /**
  * @brief Agrega un elemento al tope del stack
  */
-void stack_push(Stack s, void* data);
+void stack_push(Stack s, char data);
 
 /**
  * @brief Elimina el tope del stack y lo devuelve
  */
-void* stack_pop(Stack s);
+char stack_pop(Stack s);
 
 /**
  * @brief Libera toda la memoria usada por el stack

@@ -37,7 +37,46 @@ Stack calcular_camino(Coord init, Coord fin, Entorno e){
                     }
                 }
             }
+            free(vecinos);
         }
     }
+    liberar_a_star_data(algData,e.N, e.M);
     return camino;
+}
+
+
+/**
+ * @brief dada una casilla de finalización, 
+ * reconstruye el camino desde esa casilla hasta que encuentra una sin padre.
+ */
+Stack reconstruir_camino(HeapElem *fin){
+    Stack s = crear_stack();
+    HeapElem* aux = fin;
+    if(aux==NULL) return NULL;
+    while(aux->parent!=NULL){
+        stack_push(s, calcular_direccion(aux->parent->pos,aux->pos));
+    }
+    return s;
+}
+
+/**
+ * @brief dada una casilla, devuelve un array con sus 4 vecinos ordenados como
+ * v_up, v_right, v_down, v_left
+ */
+Coord* obtener_vecinos(Coord celda){
+    Coord* vecinas = malloc(sizeof(Coord)*4);
+    Coord up,right,down,left;
+    up.x=celda.x-1;
+    up.y=celda.y;
+    down.x=celda.x+1;
+    down.y=celda.y;
+    right.x=celda.x;
+    right.y=celda.y+1;
+    left.x=celda.x;
+    left.y=celda.y-1;
+    vecinas[0]=up;
+    vecinas[1]=right;
+    vecinas[2]=down;
+    vecinas[3]=left;
+    return vecinas;
 }

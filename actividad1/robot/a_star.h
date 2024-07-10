@@ -24,8 +24,4 @@ Stack reconstruir_camino(HeapElem *fin);
  */
 Coord* obtener_vecinos(Coord celda);
 
-/**
- * @brief dada la información del algoritmo y una celda, devuelve el valor de g de su padre.
- */
-int get_parent_g(AStartData data, Coord celda);
 #endif
