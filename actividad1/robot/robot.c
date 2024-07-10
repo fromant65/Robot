@@ -76,13 +76,20 @@ void hacer_movimiento(Robot* r, Entorno e){
         char* siguientePaso = stack_pop(r->recorridoPlaneado);
         Coord next_empty = calcular_movimiento(siguientePaso[0], next_pos);
         //Calculamos un nuevo camino desde la posición del robot 
-        //hasta el punto al que hubieramos llegado sin obstáculo
-        Stack new_path = calcular_camino(r->posicion, next_empty,r->entorno);
-        Stack plan_previo = r->recorridoPlaneado;
-        Stack aux = new_path;
-        for(;aux->next!=NULL; aux=aux->next);
-        aux->next=plan_previo;
-        r->recorridoPlaneado = new_path;
+        //hasta el punto al que hubieramos llegado sin obstáculo,
+        //Excepto que la posición actual esté más cerca de la meta
+        if(heuristica(r->posicion, r->meta) < 
+           heuristica(next_empty, r->meta)){
+            stack_free(r->recorridoPlaneado);
+            r->recorridoPlaneado = calcular_camino(r->posicion, r->meta, r->entorno);
+        }else{
+            Stack new_path = calcular_camino(r->posicion, next_empty,r->entorno);
+            Stack plan_previo = r->recorridoPlaneado;
+            Stack aux = new_path;
+            for(;aux->next!=NULL; aux=aux->next);
+            aux->next=plan_previo;
+            r->recorridoPlaneado = new_path;
+        }
         hacer_movimiento(r,e);
     }
 }
@@ -95,4 +102,18 @@ Coord calcular_movimiento(char direccion, Coord posicion){
     int next_x=direccion=='U'?posicion.x-1:direccion=='D'?posicion.x+1:posicion.x; 
     int next_y=direccion=='L'?posicion.y-1:direccion=='R'?posicion.y+1:posicion.y;
     Coord ret = {next_x, next_y};    
+}
+
+/**
+ * @brief Funcion interna que calcula el valor absoluto de un numero
+ */
+int abs(int a){
+    return a>=0?a:-a;
+}
+
+/**
+ * @brief Dadas dos coordenadas, calcula su distancia de Manhattan
+ */
+int heuristica(Coord init, Coord fin){
+    return abs(init.x-fin.x)+abs(init.y-fin.y);
 }

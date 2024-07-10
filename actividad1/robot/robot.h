@@ -38,4 +38,9 @@ void hacer_movimiento(Robot* r, Entorno e);
  */
 Coord calcular_movimiento(char direccion, Coord posicion);
 
+/**
+ * @brief Dadas dos coordenadas, calcula su distancia de Manhattan
+ */
+int heuristica(Coord init, Coord fin);
+
 #endif
