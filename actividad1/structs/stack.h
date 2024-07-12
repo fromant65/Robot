@@ -16,16 +16,18 @@ Stack crear_stack();
 /**
  * @brief Agrega un elemento al tope del stack
  */
-void stack_push(Stack s, char data);
+Stack stack_push(Stack s, char data);
 
 /**
  * @brief Elimina el tope del stack y lo devuelve
  */
-char stack_pop(Stack s);
+char stack_pop(Stack* s);
 
 /**
  * @brief Libera toda la memoria usada por el stack
  */
 void stack_free(Stack s);
+
+void print_stack(Stack s);
 
 #endif

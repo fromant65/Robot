@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "robot.h"
 #include "a_star.h"
 
@@ -71,16 +72,20 @@ void liberar_robot(Robot* r){
  * del robot a la posición a la que se movió. 
  */
 void hacer_movimiento(Robot* r, Entorno e){
-    char top_move = stack_pop(r->recorridoPlaneado);
+    char top_move = stack_pop(&(r->recorridoPlaneado));
     Coord next_pos = calcular_movimiento(top_move,r->posicion);
     int next_x=next_pos.x;
     int next_y=next_pos.y;
     if(posicion_valida(next_x, next_y,e)){
         r->posicion=next_pos;
+        if(r->recorridoHecho.capacidad<=r->recorridoHecho.largo){
+            r->recorridoHecho.capacidad *= 2;
+            r->recorridoHecho.camino=realloc(r->recorridoHecho.camino,sizeof(char)*r->recorridoHecho.capacidad);
+        }
         r->recorridoHecho.camino[r->recorridoHecho.largo++]=top_move;
     }else{
         r->entorno.grilla[next_x][next_y]=0;
-        char siguientePaso = stack_pop(r->recorridoPlaneado);
+        /*char siguientePaso = stack_pop(&(r->recorridoPlaneado));
         Coord next_empty = calcular_movimiento(siguientePaso, next_pos);
         //Calculamos un nuevo camino desde la posición del robot 
         //hasta el punto al que hubieramos llegado sin obstáculo,
@@ -96,7 +101,9 @@ void hacer_movimiento(Robot* r, Entorno e){
             for(;aux->next!=NULL; aux=aux->next);
             aux->next=plan_previo;
             r->recorridoPlaneado = new_path;
-        }
+        }*/
+        stack_free(r->recorridoPlaneado);
+        r->recorridoPlaneado=calcular_camino(r->posicion,r->meta,r->entorno);
         hacer_movimiento(r,e);
     }
 }

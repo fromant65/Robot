@@ -54,7 +54,8 @@ HeapElem* heap_dequeue(Heap* h){
  * lo agrega a la cola de prioridad representada por el heap
  */
 void heap_enqueue(Heap* h, HeapElem *elem){
-    h->buffer[++h->fin]=elem;
+    h->fin++;
+    h->buffer[h->fin]=elem;
     flotar_elemento(h, h->fin);
 }
 

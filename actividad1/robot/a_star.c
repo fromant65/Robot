@@ -1,6 +1,7 @@
 #include "a_star.h"
 #include "robot.h"
 #include <stdlib.h>
+#include <stdio.h>
 /**
  * @brief dados un entorno y una coordenada de inicio y fin
  * devuelve un stack con los movimientos a hacer para realizar
@@ -16,13 +17,15 @@ Stack calcular_camino(Coord init, Coord fin, Entorno e){
     while(algData.openList->fin>0 && camino==NULL){
         HeapElem *top = heap_dequeue(algData.openList);
         algData.hash[top->pos.x][top->pos.y]=NULL;
+        algData.closedList[top->pos.x][top->pos.y]=1;
         if(top->pos.x==fin.x && top->pos.y==fin.y){
             camino=reconstruir_camino(top);
         }else{
             Coord* vecinos = obtener_vecinos(top->pos);
             for(int i=0;i<4;i++){
                 int cx = vecinos[i].x, cy=vecinos[i].y;
-                if(algData.closedList[cx][cy]==0 && algData.hash[cx][cy]->obstaculo==0){
+                if(cx>=0 && cy>=0 && cx < e.N && cy < e.M &&
+                algData.closedList[cx][cy]==0 && posicion_valida(cx,cy,e)){
                     int g_tentativo = top->g+1;
                     if(algData.hash[cx][cy]==NULL){
                         int h=heuristica(vecinos[i], fin);
@@ -54,7 +57,12 @@ Stack reconstruir_camino(HeapElem *fin){
     HeapElem* aux = fin;
     if(aux==NULL) return NULL;
     while(aux->parent!=NULL){
-        stack_push(s, calcular_direccion(aux->parent->pos,aux->pos));
+        //printf("current (%d %d) parent (%d %d) direccion %c\n", 
+        //aux->pos.x, aux->pos.y, aux->parent->pos.x, aux->parent->pos.y,
+        //calcular_direccion(aux->parent->pos, aux->pos));
+        s=stack_push(s, calcular_direccion(aux->parent->pos,aux->pos));
+        //print_stack(s);
+        aux=aux->parent;
     }
     return s;
 }

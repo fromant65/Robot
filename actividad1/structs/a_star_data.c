@@ -1,6 +1,6 @@
 #include "a_star_data.h"
 #include <stdlib.h>
-
+#include <stdio.h>
 /**
  * @brief Dadas las dimensiones del entorno, 
  * pedimos la memoria para cada una de las estructuras del algoritmo
@@ -8,18 +8,23 @@
  */
 AStartData crear_a_star_data(int N, int M){
     AStartData data;
-    data.openList=crear_heap(N*M);
-    data.closedList=malloc(sizeof(int*)*N);
-    data.hash=malloc(sizeof(HeapElem**)*N);
-    data.nodos=malloc(sizeof(HeapElem*)*N*M);
+    Heap* openList=crear_heap(N*M);
+    int** closedList=malloc(sizeof(int*)*N);
+    HeapElem*** hash = malloc(sizeof(HeapElem**)*N);
+    HeapElem** nodos = malloc(sizeof(HeapElem*)*N*M); 
     for(int i=0; i<N;i++){
-        data.closedList[i]=malloc(sizeof(int)*M);
-        data.hash[i]=malloc(sizeof(HeapElem*)*M);
+        closedList[i]=malloc(sizeof(int)*M);
+        hash[i]=malloc(sizeof(HeapElem*)*M);
         for(int j=0; j<M;j++){
-            data.nodos[i*M+j]=NULL;
-            data.hash[i][j]=NULL;
+            nodos[i*M+j]=NULL;
+            hash[i][j]=NULL;
+            closedList[i][j]=0;
         }
     }
+    data.openList=openList;
+    data.closedList=closedList;
+    data.hash=hash;
+    data.nodos=nodos;
     return data;
 }
 
