@@ -15,7 +15,7 @@ int main(int argc, char** argv){
         }
         else printf("No se encontró el archivo %s\n", argv[1]);
     }
-    print_data(data);
+    //print_data(data);
     if(data!=NULL){
         EntornoReal e = {data->entorno, data->N, data->M};
         Robot *r = crear_robot(data->N,data->M, data->i1, data->i2, data->j1, data->j2);
@@ -23,7 +23,6 @@ int main(int argc, char** argv){
         while(r->meta.x!=r->pos.x || r->meta.y!=r->pos.y){
             i++;
             hacer_movimiento(r,e);
-            if(i>100) break;
         }
         r->camino= insertar_char(r->camino, '\0');
         printf("%s", r->camino.buffer);
