@@ -14,8 +14,8 @@ int abs(int a){
  * @return 1 si la casilla en la posición (x,y) está vacía, 
  * 0 si es un obstaculo
  */
-int posicion_valida(int x, int y, Entorno e){
-    if(x>=e.N || x<0 || y>=e.M || y<0 || e.grilla[x][y]==0)
+int posicion_valida(int x, int y, EntornoReal e){
+    if(x>=e.N || x<0 || y>=e.M || y<0 || e.grilla[x][y]==false)
         return 0;
     return 1;
 }
@@ -55,11 +55,14 @@ void hacer_movimiento(Robot* r, EntornoReal e){
     Coord posActual = r->pos;
     Coord next_pos = get_vecino_menor(r->pos, r->entorno);
     int nx = next_pos.x, ny = next_pos.y;
-    if(!e.grilla[nx][ny]){
+    if(!posicion_valida(nx,ny,e)){
         r->entorno.grilla[nx][ny]->obstaculo=true;
         r->entorno = recalcular_floodfill(posActual,r->entorno);
         hacer_movimiento(r,e);
     }else{
+        if(r->entorno.grilla[r->pos.x][r->pos.y]->visitado==true)
+            r->entorno=recalcular_floodfill(posActual, r->entorno);
+        r->entorno.grilla[r->pos.x][r->pos.y]->visitado=true;
         r->pos=next_pos;
         r->camino=insertar_char(r->camino, calcular_direccion(posActual, next_pos));
     }
@@ -102,10 +105,12 @@ int heuristica(Coord init, Coord fin){
  * del vecino del nodo con menor distancia a la meta 
  */
 Coord get_vecino_menor(Coord c, Entorno e){
-    int i_menor=0, d_menor=__INT16_MAX__;
+    int i_menor=-1, d_menor=__INT16_MAX__;
     Nodo** vecinos = get_vecinos(e.grilla[c.x][c.y],e);
     for(int i=0; i<4;i++){
-        if(vecinos[i]!=NULL && vecinos[i]->distancia<d_menor && !vecinos[i]->obstaculo){
+        if(vecinos[i]!=NULL && 
+            vecinos[i]->distancia<d_menor && 
+            !vecinos[i]->obstaculo){
             i_menor=i;
             d_menor=vecinos[i]->distancia;
         }

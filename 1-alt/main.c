@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "./structs/program_data.h"
 #include "./lectura/leer_archivo.h"
 #include "./robot/robot.h"
 int main(int argc, char** argv){
+    srand(time(NULL));
     ProgramData* data=NULL;
     if(argc>0){
         FILE* input = fopen(argv[1], "r");
@@ -27,6 +29,7 @@ int main(int argc, char** argv){
         printf("%s", r->camino.buffer);
         liberar_robot(r);
         liberar_entorno_real(e);
+        
     }
     
     return 0;

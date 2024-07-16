@@ -8,7 +8,7 @@
  * @return 1 si la casilla en la posición (x,y) está vacía, 
  * 0 si es un obstaculo
  */
-int posicion_valida(int x, int y, Entorno e);
+int posicion_valida(int x, int y, EntornoReal e);
 
 /**
  * @brief recibe las dimensiones, posición inicial y meta del robot

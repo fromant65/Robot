@@ -7,6 +7,7 @@ typedef struct{
     Coord pos;
     int distancia;
     bool obstaculo; //true: obstaculo; false: libre
+    bool visitado;
 }Nodo;
 
 Nodo* crear_nodo(int x, int y, int distancia, bool obstaculo);
