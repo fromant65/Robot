@@ -5,6 +5,12 @@
 #include <dirent.h>
 #include <unistd.h>
 
+/**
+ * Comando de compilación:
+ * gcc -o comp average_comparison.c -lrt
+ * la flag sirve para linkear la librería lrt
+ */
+
 #define MAX 10000
 #define INF 1000000
 
@@ -93,18 +99,15 @@ int min_len(char* name) {
     return ret;
 }
 
-void process_files(const char *directory)
+void process_floodfill(const char *directory)
 {
     DIR *dir;
     struct dirent *entry;
     char source_path[1024];
-    char destination_path[] = "./laberinto.txt";
     char command[1024];
     char buffer[1024];
     int program_total_length = 0;
     int program_count = 0;
-    int bfs_total_length = 0;
-    int bfs_count = 0;
     if ((dir = opendir(directory)) == NULL)
     {
         perror("opendir() error");
@@ -117,11 +120,6 @@ void process_files(const char *directory)
         //&& rand() % 50 == 0
         ){
             snprintf(source_path, sizeof(source_path), "%s/%s", directory, entry->d_name);
-            int curr_bfs = min_len(source_path);
-            if(curr_bfs!=-1){
-                bfs_total_length+=curr_bfs;
-                bfs_count++;
-            }
             snprintf(command, sizeof(command), "./programa %s",source_path);
             //printf("%s\n", command);
             FILE *program_output = popen(command, "r");
@@ -148,20 +146,123 @@ void process_files(const char *directory)
 
     // Calcular promedios
     double program_average = program_count > 0 ? (double)program_total_length / (double)program_count : 0.0;
-    double bfs_average = bfs_count > 0 ? (double)bfs_total_length / (double)bfs_count : 0.0;
     printf("PROMEDIO FLOODFILL: %f\n", program_average);
     printf("Cantidad de tableros: %d\n", program_count);
     printf("Longitud total: %d\n", program_total_length);
+}
+
+void process_astar(const char *directory){
+    DIR *dir;
+    struct dirent *entry;
+    char source_path[1024];
+    char command[1024];
+    char buffer[1024];
+    int program_total_length = 0;
+    int program_count = 0;
+    if ((dir = opendir(directory)) == NULL)
+    {
+        perror("opendir() error");
+        return;
+    }
+
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (strncmp(entry->d_name, "tablero", 7) == 0 
+        //&& rand() % 50 == 0
+        ){
+            snprintf(source_path, sizeof(source_path), "%s/%s", directory, entry->d_name);
+            snprintf(command, sizeof(command), "./programa_astar %s",source_path);
+            //printf("%s\n", command);
+            FILE *program_output = popen(command, "r");
+            if (program_output == NULL)
+            {
+                perror("Error executing ./program");
+                continue;
+            }
+
+            // Leer y procesar la salida de ./programa
+            if (fgets(buffer, sizeof(buffer), program_output) != NULL)
+            {
+                //printf("%s\n", buffer);
+                int length = strlen(buffer);
+                program_total_length += length;
+                program_count++;
+            }
+
+            pclose(program_output);
+        }
+    }
+
+    closedir(dir);
+
+    // Calcular promedios
+    double program_average = program_count > 0 ? (double)program_total_length / (double)program_count : 0.0;
+    printf("PROMEDIO A*: %f\n", program_average);
+    printf("Cantidad de tableros: %d\n", program_count);
+    printf("Longitud total: %d\n", program_total_length);
+}
+
+void process_bfs(const char* directory){
+    DIR *dir;
+    struct dirent *entry;
+    char source_path[1024];
+    char command[1024];
+    char buffer[1024];
+    int bfs_total_length = 0;
+    int bfs_count = 0;
+    if ((dir = opendir(directory)) == NULL)
+    {
+        perror("opendir() error");
+        return;
+    }
+
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (strncmp(entry->d_name, "tablero", 7) == 0 
+        //&& rand() % 50 == 0
+        ){
+            snprintf(source_path, sizeof(source_path), "%s/%s", directory, entry->d_name);
+            int curr_bfs = min_len(source_path);
+            if(curr_bfs!=-1){
+                bfs_total_length+=curr_bfs;
+                bfs_count++;
+            }
+        }
+    }
+    closedir(dir);
+    // Calcular promedios
+    double bfs_average = bfs_count > 0 ? (double)bfs_total_length / (double)bfs_count : 0.0;
     printf("PROMEDIO BFS: %f\n", bfs_average);
     printf("Cantidad de tableros: %d\n", bfs_count);
     printf("Longitud total: %d\n", bfs_total_length);
+}
+
+double tiempo_funcion(void(*runtime)(const char*), const char* directory) {
+    struct timespec start, end;
+
+    // Marcar el inicio
+    clock_gettime(CLOCK_MONOTONIC, &start);
+
+    // Ejecutar la función
+    runtime(directory);
+
+    // Marcar el final
+    clock_gettime(CLOCK_MONOTONIC, &end);
+
+    // Calcular el tiempo utilizado en segundos
+    double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1E9;
+    return time_taken;
 }
 
 int main()
 {
     srand(time(NULL));
     // Asume que los archivos están en el directorio ./tableros.
-    process_files("./tableros");
-
+    double tBFS = tiempo_funcion(process_bfs, "./tableros");
+    double tFF = tiempo_funcion(process_floodfill, "./tableros");
+    double tAS = tiempo_funcion(process_astar,"./tableros");
+    printf("Tiempo BFS: %f\n", tBFS);
+    printf("Tiempo Floodfill: %f\n", tFF);
+    printf("Tiempo A*: %f\n",tAS);
     return 0;
 }

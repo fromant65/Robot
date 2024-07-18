@@ -57,7 +57,7 @@ void hacer_movimiento(Robot* r, EntornoReal e){
     int nx = next_pos.x, ny = next_pos.y;
     if(!posicion_valida(nx,ny,e)){
         r->entorno.grilla[nx][ny]->obstaculo=true;
-        r->entorno = recalcular_floodfill(posActual,r->entorno);
+        r->entorno = recalcular_floodfill(next_pos,r->entorno);
         hacer_movimiento(r,e);
     }else{
         if(r->entorno.grilla[r->pos.x][r->pos.y]->visitado==true)
@@ -115,7 +115,12 @@ Coord get_vecino_menor(Coord c, Entorno e){
             d_menor=vecinos[i]->distancia;
         }
     }
-    Coord menor = vecinos[i_menor]->pos;
-    free(vecinos);
-    return menor;
+    if(i_menor==-1){
+        free(vecinos);
+        return (Coord){-1,-1};
+    }else{
+        Coord menor = vecinos[i_menor]->pos;
+        free(vecinos);
+        return menor;
+    }
 }
