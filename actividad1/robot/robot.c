@@ -85,23 +85,6 @@ void hacer_movimiento(Robot* r, Entorno e){
         r->recorridoHecho.camino[r->recorridoHecho.largo++]=top_move;
     }else{
         r->entorno.grilla[next_x][next_y]=0;
-        /*char siguientePaso = stack_pop(&(r->recorridoPlaneado));
-        Coord next_empty = calcular_movimiento(siguientePaso, next_pos);
-        //Calculamos un nuevo camino desde la posición del robot 
-        //hasta el punto al que hubieramos llegado sin obstáculo,
-        //Excepto que la posición actual esté más cerca de la meta
-        if(heuristica(r->posicion, r->meta) < 
-           heuristica(next_empty, r->meta)){
-            stack_free(r->recorridoPlaneado);
-            r->recorridoPlaneado = calcular_camino(r->posicion, r->meta, r->entorno);
-        }else{
-            Stack new_path = calcular_camino(r->posicion, next_empty,r->entorno);
-            Stack plan_previo = r->recorridoPlaneado;
-            Stack aux = new_path;
-            for(;aux->next!=NULL; aux=aux->next);
-            aux->next=plan_previo;
-            r->recorridoPlaneado = new_path;
-        }*/
         stack_free(r->recorridoPlaneado);
         r->recorridoPlaneado=calcular_camino(r->posicion,r->meta,r->entorno);
         hacer_movimiento(r,e);
