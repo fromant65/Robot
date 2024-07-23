@@ -9,7 +9,31 @@
 // - Devuelve un arreglo de arreglos con las filas del entorno, o NULL en caso
 //   de que el formato sea invalido
 char** leer_archivo(FILE* data, int* n, int* m, int* max_d, int* i1, int* j1, int* i2, int* j2) {
-	// Esta funcion se puede completar usando el lector de archivos que escribio para la actividad 1
+	int r1 = fscanf(data, "%d%d%d", n,m,max_d);
+	if(r1!=3) return NULL;
+	int r2 = fscanf(data, "%d%d", i1,j1);
+	if(r2!=2) return NULL;
+	int r3 = fscanf(data, "%d%d", i2,j2);
+	if(r3!=2) return NULL;
+	char** output = malloc(sizeof(char*)*(*n));
+	for(int i=0; i<(*n);i++){
+		output[i]=malloc(sizeof(char)*(*m));
+	}
+	char c=fgetc(data);
+    int i=0,j=0, valid_format=1;
+    while((c=fgetc(data))!=EOF && valid_format){
+        if((c=='\n' && j!=(*m)) || i>(*n) || (c!='.' && c!='#' && c!='\n')){
+            valid_format=0;
+        }else if(c=='\n'){
+            i++;
+            j=0;
+        }else
+            output[i][j++]=c;
+    }
+	if(valid_format) return output;
+	for(int i=0;i<(*n);i++) free(output[i]);
+	free(output);
+	return NULL;
 }
 
 // El resto de este archivo no tiene relevancia para el estudiante.

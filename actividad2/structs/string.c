@@ -15,12 +15,15 @@ void free_string(String s){
 }
 
 String push_char(String s, char c){
-    if(s.size<=s.length){
+    if(s.size-2<s.length){
         s.size*=2;
         s.buffer=realloc(s.buffer, sizeof(char)*s.size);
     }
     s.buffer[s.length]=c;
-    if(c!='\0') s.length++;
+    if(c!='\0') {
+        s.length++;
+        s.buffer[s.length]='\0';    
+    }
     return s;
 }
 

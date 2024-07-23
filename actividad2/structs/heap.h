@@ -31,7 +31,12 @@ void heap_enqueue(Heap* h, Node *elem);
 /**
  * @brief gets a Node and removes it from the queue
  */
-void heap_remove(Heap*h, Node* elem);
+void heap_remove(Heap* h, Node* elem);
+
+/**
+ * @brief gets a Heap and returns the node with biggest priority
+ */
+Node* heap_top_elem(Heap* h);
 
 void heap_float(Heap* h, int index);
 void heap_sink(Heap* h, int index);

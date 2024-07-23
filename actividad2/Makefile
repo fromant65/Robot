@@ -1,5 +1,5 @@
 # Nombre del ejecutable
-EXEC = programa
+EXEC = robotp
 
 # Compilador y banderas de compilación
 CC = gcc

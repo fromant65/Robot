@@ -15,14 +15,15 @@ int heuristic(Coord a, Coord b){
     return abs(a.x-b.x)+abs(a.y-b.y);
 }
 
-void calculate_key(Node* n, int k_m, Coord sStar){
-    Key k = n->key==NULL? malloc(sizeof(int)*2):n->key;
-    k[0]=min(n->g, n->rhs)+heuristic(sStar,n->pos)+k_m;
-    k[1]=min(n->g, n->rhs);
-    n->key=k;
+void calculate_key(Node* n, int k_m, Coord sStar) {
+    if (n->key == NULL) {
+        n->key = malloc(sizeof(int) * 2);
+    }
+    n->key[0] = min(n->g, n->rhs) + heuristic(sStar, n->pos) + k_m;
+    n->key[1] = min(n->g, n->rhs);
 }
 
-void initialize(DStarData* data, int N, int M, Coord goal, Coord start){
+void initialize(DStarData* data, int N, int M, Coord start,Coord goal){
     data->N=N;
     data->M=M;
     data->openList = new_heap(N*M);
@@ -38,9 +39,9 @@ void initialize(DStarData* data, int N, int M, Coord goal, Coord start){
 }
 
 void update_vertex(Node* u, DStarData* data){
-    if(u->pos.x != data->sGoal->pos.x && u->pos.y != data->sGoal->pos.y){
+    if(u->pos.x != data->sGoal->pos.x || u->pos.y != data->sGoal->pos.y){
         Node *minNeighbor = min_neighbor(u, data);
-        u->rhs=minNeighbor->g + get_cost(u,minNeighbor, data);
+        u->rhs=minNeighbor->g + get_cost(u, minNeighbor, data);
     }
     if(u->inOpenList){
         u->inOpenList=false;
@@ -54,33 +55,44 @@ void update_vertex(Node* u, DStarData* data){
 }
 
 void compute_shortest_path(DStarData* data){
-    Key topKey = data->openList->buffer[0]->key;
-    Key startKey = data->sStart->key;
+    Node* topElem = heap_top_elem(data->openList);
     Node* start = data->sStart;
+    calculate_key(start,data->k_m,start->pos);
+    Key topKey = topElem!=NULL?topElem->key:NULL;
+    Key startKey = data->sStart->key;
     while(compare_keys(topKey,startKey)==-1 || start->g!=start->rhs){
-        Key oldKey = new_key(topKey[0], topKey[1]);
-        data->openList->buffer[0]->inOpenList = false;
         Node* top = heap_dequeue(data->openList);
+        fprintf(stderr,"(%d %d) %d\n", top->pos.x, top->pos.y,top->key==NULL?-1:top->key[0]);
+        top->inOpenList=false;
+        Key oldKey = top->key;
         calculate_key(top,data->k_m,start->pos);
-        if(compare_keys(oldKey, top->key)==1)
+        topKey=top->key;
+        if(compare_keys(oldKey, topKey)==-1){
             heap_enqueue(data->openList, top);
-        else if(top->g>top->rhs){
+            fprintf(stderr, "enqueueing...\n");
+        }else if(top->g>top->rhs){
+            fprintf(stderr, "first else...\n");
             top->g=top->rhs;
             for(int i=0; i<4;i++){
                 int dx= i==0?-1:i==2?1:0;
                 int dy= i==1?1:i==3?-1:0;
-                Node* neighbor = data->nodes[top->pos.x+dx][top->pos.y+dy];
-                update_vertex(neighbor, data);
+                int nx= dx+top->pos.x;
+                int ny= dy+top->pos.y;
+                if(nx>=0 && nx<data->N && ny>=0 && ny<data->M){
+                    Node* neighbor = data->nodes[top->pos.x+dx][top->pos.y+dy];
+                    update_vertex(neighbor, data);
+                }
             }
         }else{
+            fprintf(stderr, "second else...\n");
             top->g=INFINITY;
+            update_vertex(top,data);
             for(int i=0; i<4;i++){
                 int dx= i==0?-1:i==2?1:0;
                 int dy= i==1?1:i==3?-1:0;
                 Node* neighbor = data->nodes[top->pos.x+dx][top->pos.y+dy];
                 update_vertex(neighbor, data);
             }
-            update_vertex(top,data);
         }
     }
 }
@@ -88,20 +100,27 @@ void compute_shortest_path(DStarData* data){
 void d_star_lite(DStarData* data, Robot* r, int sensorRange){
     data->sLast =  data->sStart;
     compute_shortest_path(data);
+    int i=0;
     while(data->sStart->pos.x != data->sGoal->pos.x || data->sStart->pos.y!=data->sGoal->pos.y){
         Node* start = data->sStart;
+        fprintf(stderr,"act (%d %d) ", start->pos.x, start->pos.y);
         Node* minNeighbor = min_neighbor(start, data);
+        fprintf(stderr, "min (%d %d) ", minNeighbor->pos.x, minNeighbor->pos.y);
         char direction = calc_direction(start->pos, minNeighbor->pos);
         if(get_cost(start, minNeighbor,data)>1){
+            fprintf(stderr, "cost %d\n", data->weights[start->pos.x][start->pos.y][2]);
             int *distances=use_sensor(r->pos);
+            fprintf(stderr,"dis %d %d %d %d\n", distances[0], distances[1], distances[2], distances[3]);
             update_weights(data, distances, sensorRange);
             free(distances);
             compute_shortest_path(data);
         }else{    
+            fprintf(stderr,"dstar else\n");
             data->sStart = minNeighbor;
             r->pos=data->sStart->pos;
-            push_char(r->path, direction);
+            r->path=push_char(r->path, direction);
         }
+        if(i++>100) break;
     }
 }
 
@@ -135,13 +154,17 @@ Node* min_neighbor(Node* s, DStarData* data){
         int dy= i==1?1:i==3?-1:0;
         Coord nPos = {s->pos.x+dx, s->pos.y+dy};
         int curr_cost=RAND_MAX;
-        if(nPos.x>=0 || nPos.y>=0 || nPos.x<data->N || nPos.y<data->M){
-            n = data->nodes[nPos.x][nPos.y];
-            curr_cost =get_cost(n,s, data)+n->g;
+        Node* curr_n = NULL;
+        if(nPos.x>=0 && nPos.y>=0 && nPos.x<data->N && nPos.y<data->M){
+            curr_n = data->nodes[nPos.x][nPos.y];
+            curr_cost =get_cost(s,curr_n, data)+curr_n->g;
         }
-        if(curr_cost<min_c)
+        if(curr_cost<min_c){
+            n=curr_n;
             min_c = curr_cost;
+        }
     }
+    //fprintf(stderr, "found min (%d %d)%d ",n->pos.x, n->pos.y, n->g);
     return n;
 }
 
@@ -181,17 +204,26 @@ void update_weights(DStarData* data, int* distances, int sensorRange) {
         int dx= i==0?-1:i==2?1:0;
         int dy= i==1?1:i==3?-1:0;
         for (int d = 1; d <= sensorRange && d <= dist; d++) {
+            //fprintf(stderr, "d=%d, dist=%d\n", d,dist);
             int nx = x + d * dx;
             int ny = y + d * dy;
-            Node* curr = data->nodes[nx][ny];
-            Node** neighbors = get_neighbors(curr, data);
-            for(int j=0; j<4;j++){
-                Coord nCoord = neighbors[i]->pos;
-                char neighborDirection = calc_direction(nCoord, curr->pos);
-                int neighborIndex = get_direction_index(neighborDirection);
-                data->weights[nCoord.x][nCoord.y][neighborIndex]=d==dist?INFINITY:1;
+            Node* curr= NULL;
+            if(nx>=0&&nx<data->N&&ny>=0&&ny<data->M){
+                curr = data->nodes[nx][ny];
+                Node** neighbors = get_neighbors(curr, data);
+                for(int j=0; j<4;j++){
+                    if(neighbors[j]!=NULL){
+                        Coord nCoord = neighbors[j]->pos;
+                        //fprintf(stderr,"nn (%d %d) (%d %d) ",nCoord.x, nCoord.y,curr->pos.x, curr->pos.y);
+                        char neighborDirection = calc_direction(nCoord, curr->pos);
+                        int neighborIndex = get_direction_index(neighborDirection);
+                        data->weights[nCoord.x][nCoord.y][neighborIndex]=d==dist?INFINITY:1;
+                        //fprintf(stderr, "weight %d\n", data->weights[nCoord.x][nCoord.y][neighborIndex]);
+                    }
+                }
+                free(neighbors);
             }
-            free(neighbors);
+                
         }
     }
     for (int i = 0; i < 4; i++) {
@@ -201,8 +233,11 @@ void update_weights(DStarData* data, int* distances, int sensorRange) {
         for (int d = 1; d <= dist; d++) {
             int nx = x + d * dx;
             int ny = y + d * dy;
-            Node* curr = data->nodes[nx][ny];
-            update_vertex(curr,data);
+            if(nx>=0&&nx<data->N&&ny>=0&&ny<data->M){
+                //fprintf(stderr, "update %d %d ", i, d);
+                Node* curr = data->nodes[nx][ny];
+                update_vertex(curr,data);
+            }
         }
     }
 }
@@ -221,7 +256,12 @@ Node** get_neighbors(Node* a, DStarData* data){
     for(int i=0; i<4;i++){
         int dx= i==0?-1:i==2?1:0;
         int dy= i==1?1:i==3?-1:0;
-        n[i]=data->nodes[pa.x+dx][pa.y+dy];
+        int nx=pa.x+dx;
+        int ny=pa.y+dy;
+        if(nx>=0&&ny>=0&&nx<data->N&&ny<data->M)
+            n[i]=data->nodes[nx][ny];
+        else
+            n[i]=NULL;
     }
     return n;
 }

@@ -72,6 +72,11 @@ void heap_sink(Heap* h, int index){
     }
 }
 
+Node* heap_top_elem(Heap* h){
+    if(h->length<1) return NULL;
+    return h->buffer[1];
+}
+
 int compare_keys(Key a, Key b){
     if(a[0]==b[0]) return a[1]<b[1]?-1:a[1]>b[1]?1:0;
     return a[0]<b[0]?-1:1;
