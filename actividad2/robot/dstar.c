@@ -1,5 +1,4 @@
 #include "dstar.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -44,13 +43,13 @@ void update_vertex(Node* u, DStarData* data){
         u->rhs=minNeighbor->g + get_cost(u, minNeighbor, data);
     }
     if(u->inOpenList){
-        u->inOpenList=false;
         heap_remove(data->openList,u);
+        u->inOpenList=false;
     }
     if(u->g!=u->rhs){
         calculate_key(u,data->k_m,data->sStart->pos);
-        u->inOpenList=true;
         heap_enqueue(data->openList,u);
+        u->inOpenList=true;
     }
 }
 
@@ -60,18 +59,15 @@ void compute_shortest_path(DStarData* data){
     calculate_key(start,data->k_m,start->pos);
     Key topKey = topElem!=NULL?topElem->key:NULL;
     Key startKey = data->sStart->key;
-    while(compare_keys(topKey,startKey)==-1 || start->g!=start->rhs){
+    while(compare_keys(heap_top_elem(data->openList)->key,startKey)<0 || start->g!=start->rhs){
         Node* top = heap_dequeue(data->openList);
-        fprintf(stderr,"(%d %d) %d\n", top->pos.x, top->pos.y,top->key==NULL?-1:top->key[0]);
         top->inOpenList=false;
         Key oldKey = top->key;
         calculate_key(top,data->k_m,start->pos);
         topKey=top->key;
         if(compare_keys(oldKey, topKey)==-1){
             heap_enqueue(data->openList, top);
-            fprintf(stderr, "enqueueing...\n");
         }else if(top->g>top->rhs){
-            fprintf(stderr, "first else...\n");
             top->g=top->rhs;
             for(int i=0; i<4;i++){
                 int dx= i==0?-1:i==2?1:0;
@@ -79,48 +75,46 @@ void compute_shortest_path(DStarData* data){
                 int nx= dx+top->pos.x;
                 int ny= dy+top->pos.y;
                 if(nx>=0 && nx<data->N && ny>=0 && ny<data->M){
-                    Node* neighbor = data->nodes[top->pos.x+dx][top->pos.y+dy];
+                    Node* neighbor = data->nodes[nx][ny];
                     update_vertex(neighbor, data);
                 }
             }
         }else{
-            fprintf(stderr, "second else...\n");
             top->g=INFINITY;
-            update_vertex(top,data);
             for(int i=0; i<4;i++){
                 int dx= i==0?-1:i==2?1:0;
                 int dy= i==1?1:i==3?-1:0;
-                Node* neighbor = data->nodes[top->pos.x+dx][top->pos.y+dy];
-                update_vertex(neighbor, data);
+                int nx= dx+top->pos.x;
+                int ny= dy+top->pos.y;
+                if(nx>=0 && nx<data->N && ny>=0 && ny<data->M){
+                    Node* neighbor = data->nodes[nx][ny];
+                    update_vertex(neighbor, data);
+                }
             }
+            update_vertex(top,data);
         }
+        calculate_key(start, data->k_m, data->sStart->pos);
+        startKey=start->key;
     }
 }
 
 void d_star_lite(DStarData* data, Robot* r, int sensorRange){
     data->sLast =  data->sStart;
     compute_shortest_path(data);
-    int i=0;
     while(data->sStart->pos.x != data->sGoal->pos.x || data->sStart->pos.y!=data->sGoal->pos.y){
         Node* start = data->sStart;
-        fprintf(stderr,"act (%d %d) ", start->pos.x, start->pos.y);
         Node* minNeighbor = min_neighbor(start, data);
-        fprintf(stderr, "min (%d %d) ", minNeighbor->pos.x, minNeighbor->pos.y);
         char direction = calc_direction(start->pos, minNeighbor->pos);
         if(get_cost(start, minNeighbor,data)>1){
-            fprintf(stderr, "cost %d\n", data->weights[start->pos.x][start->pos.y][2]);
             int *distances=use_sensor(r->pos);
-            fprintf(stderr,"dis %d %d %d %d\n", distances[0], distances[1], distances[2], distances[3]);
             update_weights(data, distances, sensorRange);
             free(distances);
             compute_shortest_path(data);
         }else{    
-            fprintf(stderr,"dstar else\n");
             data->sStart = minNeighbor;
             r->pos=data->sStart->pos;
             r->path=push_char(r->path, direction);
         }
-        if(i++>100) break;
     }
 }
 
@@ -164,7 +158,6 @@ Node* min_neighbor(Node* s, DStarData* data){
             min_c = curr_cost;
         }
     }
-    //fprintf(stderr, "found min (%d %d)%d ",n->pos.x, n->pos.y, n->g);
     return n;
 }
 
@@ -204,21 +197,22 @@ void update_weights(DStarData* data, int* distances, int sensorRange) {
         int dx= i==0?-1:i==2?1:0;
         int dy= i==1?1:i==3?-1:0;
         for (int d = 1; d <= sensorRange && d <= dist; d++) {
-            //fprintf(stderr, "d=%d, dist=%d\n", d,dist);
             int nx = x + d * dx;
             int ny = y + d * dy;
             Node* curr= NULL;
             if(nx>=0&&nx<data->N&&ny>=0&&ny<data->M){
                 curr = data->nodes[nx][ny];
+                if(d==dist){
+                    curr->g=INFINITY;
+                    curr->rhs=INFINITY;
+                }
                 Node** neighbors = get_neighbors(curr, data);
                 for(int j=0; j<4;j++){
                     if(neighbors[j]!=NULL){
                         Coord nCoord = neighbors[j]->pos;
-                        //fprintf(stderr,"nn (%d %d) (%d %d) ",nCoord.x, nCoord.y,curr->pos.x, curr->pos.y);
                         char neighborDirection = calc_direction(nCoord, curr->pos);
                         int neighborIndex = get_direction_index(neighborDirection);
                         data->weights[nCoord.x][nCoord.y][neighborIndex]=d==dist?INFINITY:1;
-                        //fprintf(stderr, "weight %d\n", data->weights[nCoord.x][nCoord.y][neighborIndex]);
                     }
                 }
                 free(neighbors);
@@ -234,7 +228,6 @@ void update_weights(DStarData* data, int* distances, int sensorRange) {
             int nx = x + d * dx;
             int ny = y + d * dy;
             if(nx>=0&&nx<data->N&&ny>=0&&ny<data->M){
-                //fprintf(stderr, "update %d %d ", i, d);
                 Node* curr = data->nodes[nx][ny];
                 update_vertex(curr,data);
             }
