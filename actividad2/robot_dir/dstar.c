@@ -59,13 +59,13 @@ void compute_shortest_path(DStarData* data){
     calculate_key(start,data->k_m,start->pos);
     Key topKey = topElem!=NULL?topElem->key:NULL;
     Key startKey = data->sStart->key;
-    while(compare_keys(heap_top_elem(data->openList)->key,startKey)<0 || start->g!=start->rhs){
+    while((data->openList->length>0 && compare_keys(heap_top_elem(data->openList)->key,startKey)<0) || start->g!=start->rhs){
         Node* top = heap_dequeue(data->openList);
         top->inOpenList=false;
         Key oldKey = top->key;
         calculate_key(top,data->k_m,start->pos);
         topKey=top->key;
-        if(compare_keys(oldKey, topKey)==-1){
+        if(compare_keys(oldKey, topKey)<0){
             heap_enqueue(data->openList, top);
         }else if(top->g>top->rhs){
             top->g=top->rhs;
@@ -96,6 +96,7 @@ void compute_shortest_path(DStarData* data){
         calculate_key(start, data->k_m, data->sStart->pos);
         startKey=start->key;
     }
+
 }
 
 void d_star_lite(DStarData* data, Robot* r, int sensorRange){
@@ -103,14 +104,20 @@ void d_star_lite(DStarData* data, Robot* r, int sensorRange){
     compute_shortest_path(data);
     while(data->sStart->pos.x != data->sGoal->pos.x || data->sStart->pos.y!=data->sGoal->pos.y){
         Node* start = data->sStart;
+        if(start->g>=INFINITY){
+            fprintf(stderr,"No way\n");
+            break;
+        }
         Node* minNeighbor = min_neighbor(start, data);
-        char direction = calc_direction(start->pos, minNeighbor->pos);
         if(get_cost(start, minNeighbor,data)>1){
+            data->k_m+=heuristic(data->sLast->pos, data->sStart->pos);
+            data->sLast=data->sStart;
             int *distances=use_sensor(r->pos);
             update_weights(data, distances, sensorRange);
             free(distances);
             compute_shortest_path(data);
         }else{    
+            char direction = calc_direction(start->pos, minNeighbor->pos);
             data->sStart = minNeighbor;
             r->pos=data->sStart->pos;
             r->path=push_char(r->path, direction);
@@ -168,7 +175,8 @@ char calc_direction(Coord p1, Coord p2){
     if(p1.x>p2.x) return 'U';
     if(p1.x<p2.x) return 'D';
     if(p1.y>p2.y) return 'L';
-    return 'R';
+    if(p1.y<p2.y) return 'R';
+    return '\0';
 }
 
 int get_direction_index(char direction){
@@ -192,45 +200,32 @@ int* use_sensor(Coord pos){
 void update_weights(DStarData* data, int* distances, int sensorRange) {
     int x = data->sStart->pos.x;
     int y = data->sStart->pos.y;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) { //directions
         int dist = distances[i];
         int dx= i==0?-1:i==2?1:0;
         int dy= i==1?1:i==3?-1:0;
-        for (int d = 1; d <= sensorRange && d <= dist; d++) {
+        for (int d = 1; d <= sensorRange && d <= dist; d++) { //distance
             int nx = x + d * dx;
             int ny = y + d * dy;
             Node* curr= NULL;
             if(nx>=0&&nx<data->N&&ny>=0&&ny<data->M){
                 curr = data->nodes[nx][ny];
-                if(d==dist){
-                    curr->g=INFINITY;
-                    curr->rhs=INFINITY;
-                }
                 Node** neighbors = get_neighbors(curr, data);
-                for(int j=0; j<4;j++){
+                for(int j=0; j<4;j++){ //Neighbors
                     if(neighbors[j]!=NULL){
                         Coord nCoord = neighbors[j]->pos;
                         char neighborDirection = calc_direction(nCoord, curr->pos);
                         int neighborIndex = get_direction_index(neighborDirection);
-                        data->weights[nCoord.x][nCoord.y][neighborIndex]=d==dist?INFINITY:1;
+                        if(d==dist) // Obstacle
+                            data->weights[nCoord.x][nCoord.y][neighborIndex]=INFINITY;
+                        else // Traversable
+                            data->weights[nCoord.x][nCoord.y][neighborIndex]=1;
+                        update_vertex(data->nodes[nCoord.x][nCoord.y],data);
                     }
                 }
                 free(neighbors);
             }
                 
-        }
-    }
-    for (int i = 0; i < 4; i++) {
-        int dist = distances[i];
-        int dx= i==0?-1:i==2?1:0;
-        int dy= i==1?1:i==3?-1:0;
-        for (int d = 1; d <= dist; d++) {
-            int nx = x + d * dx;
-            int ny = y + d * dy;
-            if(nx>=0&&nx<data->N&&ny>=0&&ny<data->M){
-                Node* curr = data->nodes[nx][ny];
-                update_vertex(curr,data);
-            }
         }
     }
 }

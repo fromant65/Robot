@@ -49,6 +49,7 @@ void heap_remove(Heap*h, Node* elem){
     if (toRemove != NULL && rIndex != -1) {
         swap(h, rIndex, h->length--);
         heap_sink(h, rIndex);
+        heap_float(h,rIndex);
     }
 }
 
@@ -82,3 +83,36 @@ int compare_keys(Key a, Key b){
     return a[0]<b[0]?-1:1;
 }
 
+// Función auxiliar para obtener el índice del hijo izquierdo
+int left_child(int index) {
+    return 2 * index;
+}
+
+// Función auxiliar para obtener el índice del hijo derecho
+int right_child(int index) {
+    return 2 * index + 1;
+}
+
+// Función auxiliar para verificar si un índice está dentro de los límites del heap
+bool is_in_bounds(int index, int length) {
+    return index <= length;
+}
+
+// Función principal para verificar la condición del heap
+bool check_heap_condition(Heap* h) {
+    for (int i = 1; i <= h->length; ++i) {
+        int left = left_child(i);
+        int right = right_child(i);
+        
+        // Verificar si el hijo izquierdo está dentro de los límites y cumple la condición del heap
+        if (is_in_bounds(left, h->length) && compare_keys(h->buffer[i]->key, h->buffer[left]->key) > 0) {
+            return false;
+        }
+
+        // Verificar si el hijo derecho está dentro de los límites y cumple la condición del heap
+        if (is_in_bounds(right, h->length) && compare_keys(h->buffer[i]->key, h->buffer[right]->key) > 0) {
+            return false;
+        }
+    }
+    return true;
+}

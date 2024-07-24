@@ -1,4 +1,4 @@
-#ifndef DSTAR_H
+#ifndef DSTAR_H 
 #define DSTAR_H
 #include "../structs/heap.h"
 #include "../structs/node.h"
@@ -73,4 +73,7 @@ int get_cost(Node* a, Node* b, DStarData* data);
  * @brief gets a node and returns an array with its neighbors
  */
 Node** get_neighbors(Node* a, DStarData* data);
+
+void sort_by_key(Node** arr, int len);
+
 #endif 

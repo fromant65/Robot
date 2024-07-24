@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "robot/dstar.h"
-#include "robot/robot.h"
+#include "robot_dir/dstar.h"
+#include "robot_dir/robot.h"
 
 int main(){
     DStarData* data = malloc(sizeof(DStarData));
@@ -17,10 +17,13 @@ int main(){
     robot->path=init_path;
     robot->pos=(Coord){i1,j1}; 
     d_star_lite(data,robot,D);
+    // fprintf(stderr,"\n");
     // for(int i=0;i<data->N;i++){
     //     for(int j=0;j<data->M;j++){
-    //         if(data->nodes[i][j]->key!=NULL)
-    //             fprintf(stderr,"%d ", data->nodes[i][j]->g);
+    //         if(data->nodes[i][j]->key!=NULL){
+    //             int v=data->nodes[i][j]->g;
+    //             fprintf(stderr,"%s%d ", v>9?"":" ",v>100?-1:v);
+    //         }
     //     }
     //     fprintf(stderr, "\n");
     // }

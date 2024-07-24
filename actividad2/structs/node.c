@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "node.h"
-#include "../robot/dstar.h"
+#include "../robot_dir/dstar.h"
 Key new_key(int v1, int v2){
     Key k = malloc(sizeof(int)*2);
     k[0]=v1;

@@ -49,4 +49,7 @@ void heap_sink(Heap* h, int index);
  * 
  */
 int compare_keys(Key a, Key b);
+
+bool check_heap_condition(Heap* h);
+
 #endif

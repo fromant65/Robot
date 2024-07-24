@@ -1,5 +1,5 @@
 # Nombre del ejecutable
-EXEC = robotp
+EXEC = robot
 
 # Compilador y banderas de compilación
 CC = gcc
@@ -9,7 +9,7 @@ CFLAGS = -Wall -Wextra -I./lectura -I./structs
 SRCDIR = .
 LECTURADIR = lectura
 STRUCTSDIR = structs
-ROBOTDIR = robot
+ROBOTDIR = robot_dir
 
 # Archivos fuente
 SRC = $(SRCDIR)/main.c $(wildcard $(LECTURADIR)/*.c) $(wildcard $(STRUCTSDIR)/*.c) $(wildcard $(ROBOTDIR)/*.c)
