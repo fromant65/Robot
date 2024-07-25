@@ -15,12 +15,12 @@ int posicion_valida(int x, int y, Entorno e);
  * e inicializa un Robot con esos datos
  * @return un puntero al Robot inicializado
  */
-Robot* crear_robot(int N, int M, int i1, int i2, int j1, int j2);
+Robot *crear_robot(int N, int M, int i1, int i2, int j1, int j2);
 
 /**
  * @brief libera la memoria usada por el robot dado
  */
-void liberar_robot(Robot* r);
+void liberar_robot(Robot * r);
 
 /**
  * @brief Realiza el primer movimiento en la lista de
@@ -30,7 +30,7 @@ void liberar_robot(Robot* r);
  * y lo pone al final de caminoRecorrido, y cambia las coordenadas
  * del robot a la posición a la que se movió. 
  */
-void hacer_movimiento(Robot* r, Entorno e);
+void hacer_movimiento(Robot * r, Entorno e);
 
 /**
  * @brief Recibe una dirección ('U', 'L', 'R', 'D') y una posición

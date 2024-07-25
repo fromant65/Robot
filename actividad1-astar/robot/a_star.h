@@ -16,12 +16,12 @@ Stack calcular_camino(Coord init, Coord fin, Entorno e);
  * @brief dada una casilla de finalización, 
  * reconstruye el camino desde esa casilla hasta que encuentra una sin padre.
  */
-Stack reconstruir_camino(HeapElem *fin);
+Stack reconstruir_camino(HeapElem * fin);
 
 /**
  * @brief dada una casilla, devuelve un array con sus 4 vecinos ordenados como
  * v_up, v_rigth, v_down, v_left
  */
-Coord* obtener_vecinos(Coord celda);
+Coord *obtener_vecinos(Coord celda);
 
 #endif

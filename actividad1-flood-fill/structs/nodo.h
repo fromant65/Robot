@@ -3,13 +3,13 @@
 #include <stdbool.h>
 #include "coord.h"
 
-typedef struct{
-    Coord pos;
-    int distancia;
-    bool obstaculo; //true: obstaculo; false: libre
-    bool visitado;
-}Nodo;
+typedef struct {
+  Coord pos;
+  int distancia;
+  bool obstaculo;               //true: obstaculo; false: libre
+  bool visitado;
+} Nodo;
 
-Nodo* crear_nodo(int x, int y, int distancia, bool obstaculo);
+Nodo *crear_nodo(int x, int y, int distancia, bool obstaculo);
 
 #endif

@@ -4,8 +4,8 @@
 /**
  * @brief Representa una coordenada en el entorno
  */
-typedef struct{
-    int x, y; 
-}Coord;
+typedef struct {
+  int x, y;
+} Coord;
 
 #endif

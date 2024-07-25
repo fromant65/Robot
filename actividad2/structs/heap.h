@@ -2,44 +2,44 @@
 #define HEAP_H
 #include "node.h"
 
-typedef struct{
-    Node** buffer;
-    int length, size;
-}Heap;
+typedef struct {
+  Node **buffer;
+  int length, size;
+} Heap;
 
 /**
  * @brief Creates an empty priority queue of given size 
  * implemented with a heap.
  */
-Heap* new_heap(int size);
+Heap *new_heap(int size);
 
 /**
  * @brief frees the memory used by the heap
  */
-void free_heap(Heap* h);
+void free_heap(Heap * h);
 
 /**
  * @return the lowest priority element from the given heap
  */
-Node* heap_dequeue(Heap* h);
+Node *heap_dequeue(Heap * h);
 
 /**
  * @brief enqueues the given node in the given heap in its right position
  */
-void heap_enqueue(Heap* h, Node *elem);
+void heap_enqueue(Heap * h, Node * elem);
 
 /**
  * @brief gets a Node and removes it from the queue
  */
-void heap_remove(Heap* h, Node* elem);
+void heap_remove(Heap * h, Node * elem);
 
 /**
  * @brief gets a Heap and returns the node with biggest priority
  */
-Node* heap_top_elem(Heap* h);
+Node *heap_top_elem(Heap * h);
 
-void heap_float(Heap* h, int index);
-void heap_sink(Heap* h, int index);
+void heap_float(Heap * h, int index);
+void heap_sink(Heap * h, int index);
 
 /**
  * @brief Gets 2 keys
@@ -50,6 +50,6 @@ void heap_sink(Heap* h, int index);
  */
 int compare_keys(Key a, Key b);
 
-bool check_heap_condition(Heap* h);
+bool check_heap_condition(Heap * h);
 
 #endif

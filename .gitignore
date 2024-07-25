@@ -2,3 +2,5 @@
 tableros
 *.o
 *.vscode
+*.c~
+*.h~

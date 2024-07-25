@@ -6,10 +6,9 @@
  * El entorno será true en espacio vacío '.',
  * false en obstáculo '#'
  */
-typedef struct
-{
-    int N,M,D,i1,i2,j1,j2;
-    bool **entorno;
-}ProgramData;
+typedef struct {
+  int N, M, D, i1, i2, j1, j2;
+  bool **entorno;
+} ProgramData;
 
 #endif

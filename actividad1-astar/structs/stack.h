@@ -1,12 +1,12 @@
 #ifndef STACK_H
 #define STACK_H
 
-typedef struct _Stack{
-    char data;
-    struct _Stack* next;
-}StackNode;
+typedef struct _Stack {
+  char data;
+  struct _Stack *next;
+} StackNode;
 
-typedef StackNode* Stack;
+typedef StackNode *Stack;
 
 /**
  * @return Un stack vacío
@@ -21,7 +21,7 @@ Stack stack_push(Stack s, char data);
 /**
  * @brief Elimina el tope del stack y lo devuelve
  */
-char stack_pop(Stack* s);
+char stack_pop(Stack * s);
 
 /**
  * @brief Libera toda la memoria usada por el stack

@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include "./../structs/program_data.h"
-ProgramData* leer_archivo(FILE*);
-void print_data(ProgramData*);
+ProgramData *leer_archivo(FILE *);
+void print_data(ProgramData *);
 
 #endif

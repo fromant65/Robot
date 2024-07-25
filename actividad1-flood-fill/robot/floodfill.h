@@ -3,9 +3,9 @@
 #include "./../structs/cola.h"
 #include "./../structs/entorno.h"
 #include "./../structs/coord.h"
-typedef struct{
-    Cola procesar;
-}FloodfillData;
+typedef struct {
+  Cola procesar;
+} FloodfillData;
 
 /**
  * @brief Realiza el primer calculo de Floodfill para el entorno dado
@@ -23,5 +23,5 @@ Entorno recalcular_floodfill(Coord conflicto, Entorno e);
 /**
  * @brief Devuelve un array de nodos vecinos de un nodo dado.
  */
-Nodo** get_vecinos(Nodo* n, Entorno e);
+Nodo **get_vecinos(Nodo * n, Entorno e);
 #endif

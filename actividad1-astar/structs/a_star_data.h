@@ -9,12 +9,12 @@
  * @brief Representa las estructuras usadas en A*
  * El heap es un heap de elementos de tipo Coord
  */
-typedef struct{
-    Heap* openList;
-    HeapElem** *hash; //array bidimensional de punteros a HeapElem con los datos del Heap
-    int** closedList; //closedList[i][j]==1 si la celda está en la lista, sino 0
-    HeapElem* *nodos; //Garbage collector para liberar la memoria de los nodos 
-}AStartData;
+typedef struct {
+  Heap *openList;
+  HeapElem ***hash;             //array bidimensional de punteros a HeapElem con los datos del Heap
+  int **closedList;             //closedList[i][j]==1 si la celda está en la lista, sino 0
+  HeapElem **nodos;             //Garbage collector para liberar la memoria de los nodos 
+} AStartData;
 
 /**
  * @brief Dadas las dimensiones del entorno, 

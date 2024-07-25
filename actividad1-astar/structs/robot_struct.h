@@ -4,10 +4,10 @@
 #include "stack.h"
 #include "entorno.h"
 #include "coord.h"
-typedef struct{
-    char* camino;
-    int largo, capacidad;
-}RobotRecorrido;
+typedef struct {
+  char *camino;
+  int largo, capacidad;
+} RobotRecorrido;
 
 /**
  * @brief 
@@ -23,11 +23,11 @@ typedef struct{
  * (al menos alrededor del recorrido) al que conoce el robot.
  * Se calcula al crear el robot.
  */
-typedef struct{
-    Coord posicion, meta;
-    RobotRecorrido recorridoHecho;
-    Stack recorridoPlaneado;
-    Entorno entorno;
-}Robot;
+typedef struct {
+  Coord posicion, meta;
+  RobotRecorrido recorridoHecho;
+  Stack recorridoPlaneado;
+  Entorno entorno;
+} Robot;
 
 #endif

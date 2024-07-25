@@ -1,11 +1,10 @@
 #ifndef STRING_H
 #define STRING_H
 
-typedef struct
-{
-    char* buffer;
-    int length, size;
-}String;
+typedef struct {
+  char *buffer;
+  int length, size;
+} String;
 
 String new_string(int size);
 void free_string(String s);
