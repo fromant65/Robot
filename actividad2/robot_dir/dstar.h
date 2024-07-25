@@ -75,6 +75,4 @@ int get_cost(Node * a, Node * b, DStarData * data);
  */
 Node **get_neighbors(Node * a, DStarData * data);
 
-void sort_by_key(Node ** arr, int len);
-
 #endif
