@@ -51,15 +51,16 @@ char calc_direction(Coord p1, Coord p2);
 int get_direction_index(char direction);
 
 /**
- * @brief Given the robot position, returns the closest obstacle in each direction
+ * @brief 
+ * Given the robot position, returns the closest obstacle in each direction
  * if there is an obstacle within the sensor range. Otherwise returns range+1.
  * The order of the directions is U-R-D-L
  */
 int *use_sensor(Coord pos);
 
 /**
- * @brief given an array of distances to the closest obstacles and the sensor range,
- * updates the weight of all affected cells
+ * @brief given an array of distances to the closest obstacles 
+ * and the sensor range, updates the weight of all affected cells
  */
 void update_weights(DStarData * data, int *distances, int range);
 
@@ -70,7 +71,7 @@ void update_weights(DStarData * data, int *distances, int range);
 int get_cost(Node * a, Node * b, DStarData * data);
 
 /**
- * @brief gets a node and returns an array with its neighbors
+ * @brief gets a node and returns an array with its neighbors in URDL order
  */
 Node **get_neighbors(Node * a, DStarData * data);
 

@@ -19,7 +19,7 @@ Heap *new_heap(int size);
 void free_heap(Heap * h);
 
 /**
- * @return the lowest priority element from the given heap
+ * @return the highest priority element from the given heap
  */
 Node *heap_dequeue(Heap * h);
 
@@ -34,7 +34,7 @@ void heap_enqueue(Heap * h, Node * elem);
 void heap_remove(Heap * h, Node * elem);
 
 /**
- * @brief gets a Heap and returns the node with biggest priority
+ * @brief gets a Heap and returns the node with highest priority
  */
 Node *heap_top_elem(Heap * h);
 

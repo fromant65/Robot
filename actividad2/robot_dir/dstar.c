@@ -128,11 +128,6 @@ void d_star_lite(DStarData * data, Robot * r, int sensorRange) {
   }
 }
 
-//utility
-/**
- * @brief Initialize all weights to 2 except for border cells
- * where the weights are set to INFINITY on out-of-bound connections
- */
 void initialize_weights(DStarData * data, int N, int M) {
   data->weights = malloc(sizeof(int **) * N);
   for (int i = 0; i < N; i++) {
