@@ -3,9 +3,6 @@
 #include "./../structs/cola.h"
 #include "./../structs/entorno.h"
 #include "./../structs/coord.h"
-typedef struct {
-  Cola procesar;
-} FloodfillData;
 
 /**
  * @brief Realiza el primer calculo de Floodfill para el entorno dado

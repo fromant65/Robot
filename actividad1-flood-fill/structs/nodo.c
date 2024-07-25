@@ -7,6 +7,5 @@ Nodo *crear_nodo(int x, int y, int distancia, bool obstaculo) {
   n->distancia = distancia;
   n->obstaculo = obstaculo;
   n->pos = pos;
-  n->visitado = false;
   return n;
 }

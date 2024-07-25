@@ -44,9 +44,6 @@ void hacer_movimiento(Robot * r, EntornoReal e) {
     r->entorno = recalcular_floodfill(next_pos, r->entorno);
     hacer_movimiento(r, e);
   } else {
-    if (r->entorno.grilla[r->pos.x][r->pos.y]->visitado == true)
-      r->entorno = recalcular_floodfill(posActual, r->entorno);
-    r->entorno.grilla[r->pos.x][r->pos.y]->visitado = true;
     r->pos = next_pos;
     r->camino =
         insertar_char(r->camino, calcular_direccion(posActual, next_pos));
