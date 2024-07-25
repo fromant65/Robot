@@ -35,6 +35,11 @@ char **leer_archivo(FILE * data, int *n, int *m, int *max_d, int *i1, int *j1,
     } else
       output[i][j++] = c;
   }
+  if (j != *n && i == *n - 1)
+    valid_format = 0;
+  if (*i1 < 0 || *i1 >= *n ||
+      *i2 < 0 || *i2 >= *n || *j1 < 0 || *j1 >= *m || *j2 < 0 || *j2 >= *m)
+    valid_format = 0;
   if (valid_format)
     return output;
   for (int i = 0; i < (*n); i++)

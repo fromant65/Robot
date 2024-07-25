@@ -52,6 +52,13 @@ ProgramData *leer_archivo(FILE * f) {
     } else
       data->entorno[i][j++] = c == '.' ? true : false;
   }
+  if (j != data->N && i == data->N - 1)
+    valid_format = false;
+  if (data->i1 < 0 || data->i1 >= data->N ||
+      data->i2 < 0 || data->i2 >= data->N ||
+      data->j1 < 0 || data->j1 >= data->M ||
+      data->j2 < 0 || data->j2 >= data->M)
+    valid_format = false;
   if (valid_format)
     return data;
   else {
