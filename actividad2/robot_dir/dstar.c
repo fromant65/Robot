@@ -33,7 +33,6 @@ void initialize(DStarData * data, int N, int M, Coord start, Coord goal) {
   initialize_weights(data, N, M);
   data->sGoal->rhs = 0;
   calculate_key(data->sGoal, 0, start);
-  data->sGoal->inOpenList = true;
   heap_enqueue(data->openList, data->sGoal);
 }
 
@@ -42,14 +41,13 @@ void update_vertex(Node * u, DStarData * data) {
     Node *minNeighbor = min_neighbor(u, data);
     u->rhs = minNeighbor->g + get_cost(u, minNeighbor, data);
   }
-  if (u->inOpenList) {
+  if (u->order > 0) {
     heap_remove(data->openList, u);
-    u->inOpenList = false;
+    //fprintf(stderr,"heap cond %d\n", check_heap_condition(data->openList));
   }
   if (u->g != u->rhs) {
     calculate_key(u, data->k_m, data->sStart->pos);
     heap_enqueue(data->openList, u);
-    u->inOpenList = true;
   }
 }
 
@@ -63,7 +61,6 @@ void compute_shortest_path(DStarData * data) {
           && compare_keys(heap_top_elem(data->openList)->key, startKey) < 0)
          || start->g != start->rhs) {
     Node *top = heap_dequeue(data->openList);
-    top->inOpenList = false;
     Key oldKey = top->key;
     calculate_key(top, data->k_m, start->pos);
     topKey = top->key;

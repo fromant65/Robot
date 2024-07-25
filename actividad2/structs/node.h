@@ -8,7 +8,7 @@ typedef struct _Node {
   Coord pos;
   int rhs, g;
   Key key;
-  bool inOpenList;
+  int order;                    // -1 if node not in open list
 } Node;
 
 Key new_key(int v1, int v2);

@@ -2,9 +2,13 @@
 #include <stdlib.h>
 
 void swap(Heap * h, int i1, int i2) {
-  Node *aux = h->buffer[i1];
-  h->buffer[i1] = h->buffer[i2];
-  h->buffer[i2] = aux;
+  if (i1 != i2) {
+    Node *aux = h->buffer[i1];
+    h->buffer[i1] = h->buffer[i2];
+    h->buffer[i2] = aux;
+    h->buffer[i1]->order = i1;
+    h->buffer[i2]->order = i2;
+  }
 }
 
 Heap *new_heap(int size) {
@@ -21,38 +25,38 @@ void free_heap(Heap * h) {
   free(h);
 }
 
-
 Node *heap_dequeue(Heap * h) {
   if (h->length == 0)
     return NULL;
   Node *first = h->buffer[1];
-  h->buffer[1] = h->buffer[h->length];
-  h->buffer[h->length--] = NULL;
-  heap_sink(h, 1);
+  first->order = -1;
+  if (h->length > 1) {
+    h->buffer[1] = h->buffer[h->length];
+    h->buffer[1]->order = 1;
+    heap_sink(h, 1);
+  }
+  h->buffer[h->length] = NULL;
+  h->length--;
   return first;
 }
 
 void heap_enqueue(Heap * h, Node * elem) {
   h->length++;
   h->buffer[h->length] = elem;
+  elem->order = h->length;
   heap_float(h, h->length);
 }
 
 void heap_remove(Heap * h, Node * elem) {
-  Node *toRemove = NULL;
-  int rIndex = -1;
-  for (int i = 1; i <= h->length && toRemove == NULL; i++) {
-    if (h->buffer[i]->pos.x == elem->pos.x
-        && h->buffer[i]->pos.y == elem->pos.y) {
-      toRemove = elem;
-      rIndex = i;
-    }
-  }
-  if (toRemove != NULL && rIndex != -1) {
-    swap(h, rIndex, h->length--);
-    heap_sink(h, rIndex);
-    heap_float(h, rIndex);
-  }
+  int index = elem->order;
+  if (index == -1)
+    return;
+  Node *toRemove = h->buffer[index];
+  swap(h, index, h->length);
+  h->length--;
+  toRemove->order = -1;
+  heap_sink(h, index);
+  heap_float(h, index);
 }
 
 void heap_float(Heap * h, int index) {
@@ -65,7 +69,7 @@ void heap_float(Heap * h, int index) {
 }
 
 void heap_sink(Heap * h, int index) {
-  if (index < 1 || index * 2 > h->length)
+  if (h->length == 1 || index < 1 || index * 2 > h->length)
     return;
   int smallerChild = index * 2;
   if (index * 2 + 1 <= h->length &&
